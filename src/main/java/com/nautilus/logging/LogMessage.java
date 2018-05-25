@@ -1,8 +1,8 @@
 package com.nautilus.logging;
 
 public class LogMessage implements ILogMessage {
-    private String msg;
-    private int level;
+    String msg;
+    int level;
 
     public LogMessage(String msg, int level) {
         this.msg = msg;
