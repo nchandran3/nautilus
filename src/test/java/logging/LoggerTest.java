@@ -52,4 +52,15 @@ public class LoggerTest {
         logger.log("Test message 3", PriorityLevel.HIGH);
         assertEquals(queue.size(), 3);
     }
+
+    @Test
+    public void shouldBuildLogMessages() {
+        logger.buildNewLogMessage()
+        .append("Hello ")
+        .append("World")
+        .logMessage(PriorityLevel.HIGH);
+
+        assertEquals(queue.size(), 1);
+        assertEquals(queue.poll().getMessage(), "Hello World");
+    }
 }
