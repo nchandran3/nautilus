@@ -2,11 +2,11 @@ package logging;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import com.nautilus.logging.ILogMessage;
 import com.nautilus.logging.Logger;
 import com.nautilus.logging.PriorityLevel;
+import com.nautilus.logging.TimestampedLogMessage;
 import com.nautilus.logging.ILogMessageFactory;
-import com.nautilus.logging.LogMessageFactory;
+import com.nautilus.logging.TimestampedLogMessageFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,15 +15,15 @@ import static org.junit.Assert.*;
 
 
 public class LoggerTest {
-    private BlockingQueue<ILogMessage> queue;
-    private ILogMessageFactory<ILogMessage> factory;
+    private BlockingQueue<TimestampedLogMessage> queue;
+    private ILogMessageFactory<TimestampedLogMessage> factory;
 
-    private Logger<ILogMessage> logger;
+    private Logger<TimestampedLogMessage> logger;
 
     @Before
     public void initMocks() {
-        queue = new PriorityBlockingQueue<ILogMessage>(10, (a, b) -> b.getPriority() - a.getPriority());
-        factory = new LogMessageFactory();
+        queue = new PriorityBlockingQueue<TimestampedLogMessage>(10, (a, b) -> b.getPriority() - a.getPriority());
+        factory = new TimestampedLogMessageFactory();
         logger = new Logger<>(queue, factory);
     }
 
