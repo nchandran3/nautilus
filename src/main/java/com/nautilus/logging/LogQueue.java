@@ -5,12 +5,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class LogQueue<E extends Serializable> extends PriorityBlockingQueue<E> {
 
     private static final long serialVersionUID = -4956582686690552151L;
     protected static final String CONTENTS_DUMP_FILE = "./dump/queue_contents.txt";
+    public LogQueue(int initialCapacity, Comparator<E> comparator) {
+        super(initialCapacity, comparator);
+    }
 
     @Override
     public boolean add(E ele) {
