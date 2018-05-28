@@ -9,13 +9,18 @@ import java.util.concurrent.BlockingQueue;
 import com.nautilus.logging.*;
 
 class Runner {
+    private static long LOG_READER_INTERVAL_MS = 2000;
+    private static long LOGGER_THREAD_INTERVAL_MIN_MS = 1000;
+    private static long LOGGER_THREAD_INTERVAL_VARIANCE_MS = 9000;
+
+
     public static void main(String[] args) {
         final BlockingQueue<TimestampedLogMessage> queue = new LogQueue<TimestampedLogMessage>(100, new LogMessageComparator());
         final ILogMessageFactory<TimestampedLogMessage> msgGenerator = new TimestampedLogMessageFactory();
         final LogReader<TimestampedLogMessage> reader = new LogReader<>(queue);
 
         List<Thread> threads = createLoggerThreads(queue, msgGenerator);
-        threads.add(createReadQueueOnIntervalThread(reader, queue, 3000));
+        threads.add(createReadQueueOnIntervalThread(reader, queue, LOG_READER_INTERVAL_MS));
         System.out.println("Running Threads");
         threads.forEach(t -> {
             t.start();
@@ -33,13 +38,15 @@ class Runner {
         final LogReader<T> reader, final BlockingQueue<T> queue, final long millis
         ) {
         return new Thread(() ->  {
+            int numReads = 1;
             int numNoMessages = 0;
-            while (numNoMessages < 10) {
-                System.out.println("=========================================================================");
+            while (numNoMessages < 3) {
+                System.out.println("=============================READ #" + numReads++ + "======================================\n");
                 printQueueState(queue);
                 StringBuilder output = new StringBuilder("\n\n[READER]: ");
                 T msg = reader.get();
                 if (msg != null) {
+                    numNoMessages = 0;
                     output.append(
                         String.format("Message read:\n\t[Priority: %d]\n\t[Message: %s]\n", msg.getPriority(), msg.getMessage())
                     );
@@ -89,7 +96,7 @@ class Runner {
                         level
                     );
                     try {
-                        Thread.sleep((long) (Math.random() * 3000) + 1000);
+                        Thread.sleep((long) (Math.random() * LOGGER_THREAD_INTERVAL_VARIANCE_MS) + LOGGER_THREAD_INTERVAL_MIN_MS);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
